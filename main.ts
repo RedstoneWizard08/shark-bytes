@@ -3,6 +3,8 @@ namespace SpriteKind {
     export const Powerup = SpriteKind.create();
 }
 
+console.log("Initializing game...");
+
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     animation.runImageAnimation(mySprite, assets.animation`shooting shark`, 100, false);
     pause(500);
@@ -40,6 +42,8 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (sprite, otherSpr
     otherSprite.destroy(effects.spray, 100);
     info.changeScoreBy(1);
     music.powerUp.play();
+
+    console.log("[Game] Eat fish.");
 });
 
 sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite, otherSprite) {
@@ -49,12 +53,16 @@ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite, oth
     music.baDing.play();
     info.startCountdown(35);
     sprite.destroy();
+
+    console.log("[Game] Fire projectile.");
 });
 
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
     music.bigCrash.play();
     info.changeLifeBy(-1);
     otherSprite.destroy(effects.spray, 500);
+
+    console.log("[Game] Enemy hit player.");
 });
 
 let myEnemy: Sprite = null;
@@ -118,4 +126,4 @@ game.onUpdateInterval(3000, function () {
     // 50,
     // true
     // );
-})
+});
