@@ -20,7 +20,50 @@ class Logger {
     }
 }
 
+class ScoreSystem {
+    private scoreFieldName: string;
+    private value: number;
+
+    constructor(field: string, initialValue: number) {
+        this.scoreFieldName = field;
+        this.value = initialValue;
+
+        this.tryRefreshValue();
+    }
+
+    private tryRefreshValue() {
+        try {
+            const value = blockSettings.readNumber(this.scoreFieldName);
+            if(value) {
+                this.value = value;
+            }
+        } catch(e) {
+            logger.info("There is no saved value, using default...");
+        }
+    }
+
+    private saveValue() {
+        blockSettings.writeNumber(this.scoreFieldName, this.value);
+    }
+
+    public bumpValue(n = 1) {
+        this.value += n;
+        this.saveValue();
+    }
+
+    public decreaseValue(n = 1) {
+        this.value -= n;
+        this.saveValue();
+    }
+
+    public setValue(n: number) {
+        this.value = n;
+        this.saveValue();
+    }
+}
+
 const logger = new Logger("Shark Bytes");
+const score = new ScoreSystem("score", 0);
 
 const spawnProjectile = () => {
     projectile = sprites.createProjectileFromSprite(assets.image`laser`, mySprite, 100, 0);
@@ -30,7 +73,7 @@ const spawnProjectile = () => {
 const onPressB = () => {
     animation.runImageAnimation(mySprite, assets.animation`shooting shark`, 100, false);
     pause(500);
-    
+
     spawnProjectile();
     runSwimAnimation(MovementValue.RIGHT);
 
@@ -40,7 +83,7 @@ const onPressB = () => {
 const onPressA = () => {
     animation.runImageAnimation(mySprite, assets.animation`Shooting shark 2`, 100, false);
     pause(500);
-    
+
     spawnProjectile();
     runSwimAnimation(MovementValue.LEFT);
 
@@ -48,9 +91,9 @@ const onPressA = () => {
 }
 
 const runSwimAnimation = (movement: MovementValue) => {
-    if(movement == MovementValue.LEFT) {
+    if (movement == MovementValue.LEFT) {
         animation.runImageAnimation(mySprite, assets.animation`Swim Left`, 200, true);
-    } else if(movement == MovementValue.RIGHT) {
+    } else if (movement == MovementValue.RIGHT) {
         animation.runImageAnimation(mySprite, assets.animation`Swim Right`, 200, true);
     } else {
         console.error("Invalid movement direction!");
